@@ -1,0 +1,56 @@
+import { createConnection } from '../config/database.js';
+import { cleanInput, extractWords } from '../utils/textProcessing.js';
+
+export const findResolution = async (message) => {
+  const connection = await createConnection();
+  
+  try {
+    const cleanedInput = cleanInput(message);
+    const words = extractWords(cleanedInput);
+    
+    console.log('Mots extraits après nettoyage :', words);
+
+    const [rows] = await connection.query("SELECT id, libelle FROM dico");
+    const matchedIds = [];
+    
+    rows.forEach(row => {
+      const libelle = row.libelle.toLowerCase();
+      if (words.some(word => word === libelle)) {
+        matchedIds.push(row.id);
+      }
+    });
+
+    console.log('IDs correspondants trouvés :', matchedIds);
+
+    if (matchedIds.length === 0) {
+      return "Je ne comprends pas votre demande. Pourriez-vous reformuler?";
+    }
+
+    const conditions = matchedIds.map(id => `FIND_IN_SET(${id}, probleme_ids)`).join(' OR ');
+    const [resolutions] = await connection.query(
+      `SELECT message, probleme_ids FROM resolution WHERE ${conditions}`
+    );
+
+    if (resolutions.length === 0) {
+      return "Je n'ai pas trouvé de solution pour ce problème spécifique.";
+    }
+
+    const detailedResolutions = resolutions.map((resolution) => {
+      const problemIds = resolution.probleme_ids
+        .split(',')
+        .map(id => parseInt(id.trim(), 10));
+      const matchCount = problemIds.filter(id => matchedIds.includes(id)).length;
+      return { ...resolution, matchCount };
+    });
+
+    const sortedResolutions = detailedResolutions.sort(
+      (a, b) => b.matchCount - a.matchCount
+    );
+
+    console.log('Résolutions triées par pertinence :', sortedResolutions);
+
+    return sortedResolutions[0].message;
+  } finally {
+    await connection.end();
+  }
+};
