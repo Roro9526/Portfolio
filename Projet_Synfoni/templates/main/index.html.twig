@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plan Culinaire
+{% endblock %}
+
+{% block stylesheets %}
+	<style>
+
+		.plan-culinaire-container {
+			height: 100vh; /* Hauteur de la page */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+		}
+
+		.plan-culinaire-text {
+			margin-bottom: 2rem;
+		}
+
+		.plan-culinaire-text h1 {
+			font-size: 3.5rem;
+			font-weight: bold;
+			color: #ffe066; /* Couleur dorée */
+		}
+
+		.plan-culinaire-text h3 {
+			font-size: 2rem;
+			color: #ff69b4; /* Rose pour l'aspect sensuel */
+		}
+
+		.plan-culinaire-text p {
+			font-size: 1.25rem;
+			color: #f0d3f7;
+		}
+
+		.plan-culinaire-btn {
+			font-size: 1.2rem;
+			color: #4a0066; /* Violet pour le bouton */
+			font-weight: bold;
+			text-decoration: none;
+			border-radius: 5px;
+			border: 2px solid #ff69b4;
+			padding: 10px 20px;
+			transition: background-color 0.3s ease, color 0.3s ease;
+		}
+
+		.plan-culinaire-btn:hover {
+			background-color: #ff69b4; /* Rose au survol */
+			color: #fff;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="container-fluid p-0 background-image">
+		<div class="row justify-content-center align-items-center plan-culinaire-container">
+			<div class="col-12 plan-culinaire-text">
+				<h1>Bienvenue dans votre Plan Culinaire</h1>
+				<h3>Rencontrez, dégustez, savourez.</h3>
+				<p class="lead mb-4">Un petit aperçu de vous, avant de goûter à l’expérience.</p>
+				<a href="{{ path('creation_personnage') }}" class="plan-culinaire-btn">
+					Commencez ici
+				</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

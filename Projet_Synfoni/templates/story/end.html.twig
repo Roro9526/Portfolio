@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fin du scénario
+{% endblock %}
+
+{% block stylesheets %}
+	<style>
+		.end-game-container {
+			background-color: #2d0035; /* Fond sombre pour la page */
+			color: #f8f1f1; /* Texte clair */
+			min-height: 100vh; /* Hauteur minimale de la page */
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+		}
+
+		.end-game-container h1 {
+			color: #ffe066; /* Couleur dorée pour le titre */
+			font-size: 3rem;
+			font-weight: bold;
+		}
+
+		.end-game-container p {
+			font-size: 1.5rem;
+			color: #f0d3f7; /* Couleur douce pour le texte */
+		}
+
+		.end-game-container a {
+			font-size: 1.2rem;
+			color: #ff69b4; /* Lien rose pour le retour */
+			text-decoration: none;
+			font-weight: bold;
+		}
+
+		.end-game-container a:hover {
+			text-decoration: underline;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="end-game-container">
+		<h1>Félicitations !</h1>
+		<p>Vous avez trempé le biscuit avec brio... et l'aventure ne fait que commencer. Préparez-vous pour des surprises encore plus épicées la prochaine fois !</p>
+		<a href="{{ path('story') }}">Retour à la liste des rendez-vous</a>
+	</div>
+{% endblock %}

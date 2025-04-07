@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<div class="container py-3" style="background-color: #5E2B8A; color: #F5F5F5; border-radius: 15px;">
+		<div class="row text-center">
+			<h1 class="text-warning mb-3">{{ scenario.NomScenario }}</h1>
+			<h2 class="text-light mb-4">Niveau:
+				{{ niveau.nomNiveau }}</h2>
+		</div>
+
+		<!-- Affichage des messages flash -->
+		<div class="row">
+			<div class="col-12">
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">{{ message }}</div>
+				{% endfor %}
+				{% for message in app.flashes('choiceText') %}
+					<div class="alert alert-info">{{ message }}</div>
+					<!-- Affichage du texte du choix -->
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<div class="col-12">
+				<h3 class="text-pink">Situation:</h3>
+				<p>{{ niveau.TextNiveau }}</p>
+			</div>
+		</div>
+
+		<div class="row justify-content-center mb-4">
+			<div class="col-md-8 text-center">
+				<h3 class="text-pink">Statistiques du personnage:</h3>
+				{% if caracteristiques %}
+					<ul class="list-unstyled">
+						<li>
+							<strong>Aura:</strong>
+							{{ caracteristiques.Aura }}</li>
+						<li>
+							<strong>Humour:</strong>
+							{{ caracteristiques.Humour }}</li>
+						<li>
+							<strong>Charisme:</strong>
+							{{ caracteristiques.Charisme }}</li>
+						<li>
+							<strong>Pertinence:</strong>
+							{{ caracteristiques.Pertinence }}</li>
+						<li>
+							<strong>Intelligence:</strong>
+							{{ caracteristiques.Intelligence }}</li>
+					</ul>
+				{% else %}
+					<p>Aucune caractéristique disponible pour ce personnage.</p>
+				{% endif %}
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<div class="col-12 text-center">
+				<h3 class="text-pink">Choix disponibles</h3>
+				<div class="d-flex flex-wrap justify-content-center">
+					{% for choix in choix %}
+						<a href="{{ path('story_choix', { 'slug': scenario.NomScenario|replace({' ': '-'})|lower, 'niveauId': niveau.id, 'choixId': choix.id }) }}" class="btn m-2" style="background: linear-gradient(135deg, #FF69B4, #5E2B8A); color: #F5F5F5; border: none; border-radius: 10px; padding: 10px 20px;">
+							{{ choix.nomChoix }}
+						</a>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

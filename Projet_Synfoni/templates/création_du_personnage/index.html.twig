@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer votre alter ego
+{% endblock %}
+
+{% block stylesheets %}
+	<style>
+		.form-label {
+			color: #ffe066; /* Couleur dorée claire pour un meilleur contraste */
+			font-weight: bold; /* Police en gras pour plus de visibilité */
+			font-size: 1.1rem; /* Taille légèrement plus grande pour une meilleure lisibilité */
+		}
+
+		.form-control {
+			background-color: #2d0035; /* Fond sombre pour les champs de saisie */
+			color:rgb(0, 0, 0); /* Texte clair dans les champs */
+			border: 1px solid #ff69b4; /* Bordure rose pour les champs */
+		}
+
+		.form-control:focus {
+			border-color: #ff69b4; /* Bordure rose lors de la mise au point */
+			box-shadow: 0 0 5px rgba(255, 105, 180, 0.7); /* Ombre rose lors de la mise au point */
+		}
+
+		.btn-custom {
+			background-color: #ff69b4; /* Couleur de fond rose */
+			color: #fff; /* Texte blanc */
+			font-weight: bold; /* Texte en gras */
+			border-radius: 5px; /* Coins arrondis */
+			width: 100%; /* Largeur complète */
+		}
+
+		.card-custom {
+			background-color: #4a0066; /* Fond violet foncé pour la carte */
+			border: 2px solid #ff69b4; /* Bordure rose pour la carte */
+			border-radius: 10px; /* Coins arrondis pour la carte */
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5" style="background-color: #2d0035; color: #f8f1f1; min-height: 100vh;">
+		<div class="row justify-content-center">
+			<div class="col-md-8 col-lg-6 text-center text-warning">
+
+				<h1 class="mb-4" style="color: #f8f1f1; font-size: 2.5rem; font-weight: bold;">
+					Créer votre personnage
+				</h1>
+
+				<p class="mb-4" style="font-size: 1.2rem; color: #f0d3f7;">
+					Donnez vie à votre alter ego. Choisissez ses traits et laissez-le séduire !
+				</p>
+
+				{% for message in app.flashes('error') %}
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				{% endfor %}
+
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				{% endfor %}
+
+				<div class="card shadow border-0 card-custom">
+					<div class="card-body p-4">
+						{{ form_start(form, { attr: { class: 'needs-validation', novalidate: 'novalidate' } }) }}
+						<div class="mb-3">
+							{{ form_row(form.NomPersonnage, { label: 'Nom de votre personnage', label_attr: {'class': 'form-label'} }) }}
+						</div>
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								{{ form_row(form.Aura, { label: 'Aura', label_attr: {'class': 'form-label'} }) }}
+							</div>
+							<div class="col-md-6 mb-3">
+								{{ form_row(form.Humour, { label: 'Humour', label_attr: {'class': 'form-label'} }) }}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								{{ form_row(form.Charisme, { label: 'Charisme', label_attr: {'class': 'form-label'} }) }}
+							</div>
+							<div class="col-md-6 mb-3">
+								{{ form_row(form.Pertinence, { label: 'Pertinence', label_attr: {'class': 'form-label'} }) }}
+							</div>
+						</div>
+						<div class="mb-3">
+							{{ form_row(form.Intelligence, { label: 'Intelligence', label_attr: {'class': 'form-label'} }) }}
+						</div>
+						<button class="btn btn-custom">
+							Créer votre personnage
+						</button>
+
+						{{ form_end(form) }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisissez un scénario
+{% endblock %}
+
+{% block personnage_stats %}
+	{% if personnage is defined %}
+		{% include 'components/personnage_stats.html.twig' %}
+	{% endif %}
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5" style="background-color: #2d0035; color: #f8f1f1; min-height: 100vh;">
+		<div class="row justify-content-center">
+			<div class="col-md-8 text-center">
+
+				<h1 class="mb-4" style="color: #f8f1f1; font-size: 2.5rem; font-weight: bold;">
+					Date disponibles
+				</h1>
+
+				<p class="mb-4" style="font-size: 1.2rem; color: #f0d3f7;">
+					Plongez dans des histoires captivantes. Sélectionnez un scénario et laissez votre personnage faire ses preuves.
+				</p>
+
+				{% for message in app.flashes('error') %}
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				{% endfor %}
+
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				{% endfor %}
+
+				<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+					{% for item in scenarios %}
+						<div class="col">
+							<div class="card h-100 shadow" style="background-color: #4a0066; border: 2px solid #ff69b4; border-radius: 10px;">
+								<div class="card-body text-center p-4">
+									<h5 class="card-title mb-3" style="color: #ffe066; font-weight: bold;">
+										{{ item.scenario.NomScenario }}
+									</h5>
+									<p class="card-text" style="color: #d9b3ff;">
+										{{ item.scenario.description }}
+									</p>
+									<a href="{{ path('story_show', {slug: item.slug}) }}" class="btn" style="background-color: #ff69b4; color: #fff; font-weight: bold; border-radius: 5px; width: 100%;">
+										Commencer
+									</a>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

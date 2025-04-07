@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion
+{% endblock %}
+
+{% block stylesheets %}
+	<style>
+		.login-container {
+			background-color: #2d0035; /* Fond sombre */
+			color: #f8f1f1; /* Texte clair */
+			min-height: 100vh; /* Hauteur minimale de la page */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.card-login {
+			width: 100%;
+			max-width: 400px;
+			background-color: #4a0066; /* Fond pour la carte de connexion */
+			border-radius: 10px;
+		}
+
+		.card-header {
+			background-color: rgba(218, 196, 163, 1); /* Couleur douce pour l'en-tête */
+			text-align: center;
+			padding: 1rem;
+		}
+
+		.card-header h3 {
+			color: #4a0066; /* Couleur du titre */
+			font-size: 1.8rem;
+			font-weight: bold;
+		}
+
+		.form-label {
+			color: #ffe066; /* Couleur dorée pour les labels */
+			font-weight: bold;
+		}
+
+		.form-control {
+			background-color: #2d0035; /* Fond sombre pour les champs */
+			color: #f8f1f1; /* Texte clair dans les champs */
+			border: 1px solid #ff69b4; /* Bordure rose pour les champs */
+		}
+
+		.form-control:focus {
+			border-color: #ff69b4; /* Bordure rose au focus */
+			box-shadow: 0 0 5px rgba(255, 105, 180, 0.7); /* Ombre rose au focus */
+		}
+
+		.btn-login {
+			background-color: #ff69b4; /* Bouton rose */
+			color: #fff; /* Texte blanc */
+			font-weight: bold; /* Texte en gras */
+			border-radius: 5px; /* Coins arrondis */
+			width: 100%;
+		}
+
+		.alert-danger {
+			background-color: #ff6347; /* Fond rouge pour les alertes */
+			color: #fff; /* Texte blanc */
+			border-radius: 5px;
+		}
+
+		.alert-danger a {
+			color: #fff; /* Texte en blanc pour les liens d'alerte */
+		}
+
+		.alert-danger a:hover {
+			text-decoration: underline; /* Souligné au survol */
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="login-container">
+		<div class="card card-login shadow-lg">
+			<div class="card-header">
+				<h3 class="m-0">Sign In</h3>
+			</div>
+			<div class="card-body p-4">
+				{% if error %}
+					<div class="alert alert-danger mb-4">
+						{{ error.messageKey|trans(error.messageData, 'security') }}
+					</div>
+				{% endif %}
+
+				<form method="post">
+					<div class="mb-3">
+						<label for="username" class="form-label">Username</label>
+						<input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
+					</div>
+
+					<div class="mb-3">
+						<label for="password" class="form-label">Password</label>
+						<input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+					</div>
+
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+					<div class="d-grid gap-2">
+						<button class="btn btn-login btn-lg" type="submit">
+							Connexion
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
