@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: loup-garou-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongo:27017/loup-garou
+    networks:
+      - loup-garou-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: loup-garou-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - loup-garou-network
+    restart: unless-stopped
+
+
+
+  mongo:
+    image: mongo:latest
+    container_name: loup-garou-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - loup-garou-network
+    restart: unless-stopped
+
+networks:
+  loup-garou-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
