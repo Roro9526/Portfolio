@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail Client</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            background-color: #1e293b;
+            color: #94a3b8;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+        }
+
+        /* Styles pour les lignes parents (Factures) */
+        tr.invoice-row {
+            background-color: #1e293b;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        tr.invoice-row:hover {
+            background-color: #334155;
+        }
+
+        tr.invoice-row td {
+            font-weight: 600;
+            border-bottom: none;
+            /* Pas de bordure pour coller au détail */
+        }
+
+        /* Styles pour les lignes de détail (Articles) */
+        tr.detail-row {
+            background-color: #0f172a;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        tr.detail-row td {
+            border-bottom: 1px solid #1e293b;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        tr.detail-row:last-child td {
+            border-bottom: 1px solid #475569;
+            /* Bordure finale du groupe */
+        }
+
+        .hidden-row {
+            display: none;
+        }
+
+        .toggle-icon {
+            display: inline-block;
+            transition: transform 0.2s;
+            margin-right: 8px;
+        }
+
+        .rotated {
+            transform: rotate(90deg);
+        }
+
+        .num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .service-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .bg-mag {
+            background: #0ea5e9;
+            color: #fff;
+        }
+
+        .bg-atl {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .pl-detail {
+            padding-left: 40px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1 id="client-name">Chargement...</h1>
+        <div class="subtitle" id="client-info">-</div>
+    </div>
+
+    <table id="detail-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;"></th>
+                <th>Date</th>
+                <th>N° Facture</th>
+                <th>Remise d'achat</th>
+                <th>Service</th>
+                <th>Constructeur</th>
+                <th class="num">Quantité</th>
+                <th class="num">Prix Unit.</th>
+                <th class="num">Montant HT</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <tr>
+                <td colspan="9" class="loading">Chargement des données...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const API_BASE = '';
+
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const numcli = params.get('numcli');
+            const date_n = params.get('date_n') || '';
+
+            if (!numcli) {
+                document.body.innerHTML = '<div class="loading">Erreur : Aucun numéro client spécifié</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/clients/${numcli}?date_n=${date_n}`);
+                const result = await response.json();
+
+                if (!result.success) throw new Error(result.error);
+
+                const client = result.client;
+
+                document.getElementById('client-name').textContent = `${client.nom || 'Client'} (#${numcli})`;
+                document.getElementById('client-info').textContent =
+                    [client.adr1, client.code_postal, client.ville, client.id_concession ? `Site: ${client.id_concession}` : '']
+                        .filter(Boolean).join(' - ');
+
+                // 1. Combiner toutes les lignes
+                const allLines = [
+                    ...result.lignes_magasin.map(l => ({ ...l, service: 'Magasin', serviceClass: 'bg-mag' })),
+                    ...result.lignes_atelier.map(l => ({ ...l, service: 'Atelier', serviceClass: 'bg-atl' }))
+                ];
+
+                if (allLines.length === 0) {
+                    document.getElementById('table-body').innerHTML = '<tr><td colspan="8" class="loading">Aucun achat trouvé</td></tr>';
+                    return;
+                }
+
+                // 2. Grouper par Facture uniquement
+                const invoices = {};
+                allLines.forEach(line => {
+                    // Clé unique : Facture uniquement (sans constructeur)
+                    const numFac = line.num_facture || 'UNKNOWN';
+                    const key = numFac;
+
+                    if (!invoices[key]) {
+                        invoices[key] = {
+                            id: key, // ID for toggle
+                            num_facture: numFac,
+                            date_facture: line.date_facture,
+                            service: line.service,
+                            serviceClass: line.serviceClass,
+                            constructeur: '', // Vide car regroupement par facture uniquement
+                            total_ht: 0,
+                            lines: []
+                        };
+                    }
+                    invoices[key].lines.push(line);
+                    invoices[key].total_ht += parseFloat(line.montant_ht || 0);
+                });
+
+                // 3. Convertir en tableau et trier par date
+                const invoiceList = Object.values(invoices).sort((a, b) =>
+                    new Date(b.date_facture) - new Date(a.date_facture)
+                );
+
+                // 4. Générer le HTML
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = invoiceList.map((inv, index) => {
+                    const invoiceId = `inv-${index}`; // Utiliser un index sûr pour l'ID DOM
+
+                    // Ligne Principale (Groupe Facture + Constructeur)
+                    const mainRow = `
+                        <tr class="invoice-row" onclick="toggleDetails('${invoiceId}')">
+                            <td style="text-align: center;"><span id="icon-${invoiceId}" class="toggle-icon">▶</span></td>
+                            <td>${formatDate(inv.date_facture)}</td>
+                            <td>${inv.num_facture}</td>
+                            <td></td>
+                            <td><span class="service-badge ${inv.serviceClass}">${inv.service}</span></td>
+                            <td><strong>${inv.constructeur}</strong></td>
+                            <td class="num">${inv.lines.length} articles</td>
+                            <td class="num">-</td>
+                            <td class="num"><strong>${formatCurrency(inv.total_ht)}</strong></td>
+                        </tr>
+                    `;
+
+                    // Lignes de Détail (Articles)
+                    const detailRows = inv.lines.map(line => `
+                        <tr class="detail-row hidden-row group-${invoiceId}">
+                            <td></td>
+                            <td style="color: #64748b;">${line.code_cla || '-'}</td>
+                            <td style="color: #94a3b8; font-style: italic;">${line.designation || '-'}</td>
+                            <td style="color: #64748b;">${line.remise_achat || '-'}</td>
+                            <td></td>
+                            <td style="color: #64748b;">${line.constructeur || '-'}</td>
+                            <td class="num">${parseFloat(line.quantite || 0).toFixed(2)}</td>
+                            <td class="num">${formatCurrency(line.prix_unitaire || 0)}</td>
+                            <td class="num">${formatCurrency(line.montant_ht || 0)}</td>
+                        </tr>
+                    `).join('');
+
+                    return mainRow + detailRows;
+                }).join('');
+
+            } catch (error) {
+                document.body.innerHTML = `<div class="loading">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        function toggleDetails(id) {
+            // Basculer la visibilité des lignes
+            const rows = document.querySelectorAll(`.group-${id}`);
+            rows.forEach(row => row.classList.toggle('hidden-row'));
+
+            // Faire tourner l'icône
+            const icon = document.getElementById(`icon-${id}`);
+            if (icon) {
+                icon.textContent = icon.textContent === '▶' ? '▼' : '▶';
+                // Ou utiliser classList toggle mais le textContent est simple
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

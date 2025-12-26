@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard CA - Chiffre d'Affaires</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Tom Select CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar avec filtres -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">📊 Dashboard CA</h1>
+                <p class="subtitle">Chiffre d'Affaires</p>
+            </div>
+
+            <div class="filters-section">
+                <h3 class="section-title">Période</h3>
+
+                <div class="filter-group">
+                    <label for="date-n">Date N (Année en cours)</label>
+                    <input type="date" id="date-n" class="date-input">
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <h3 class="section-title">Filtres</h3>
+
+                <div class="filter-group">
+                    <label for="filter-societe">Société</label>
+                    <select id="filter-societe" multiple placeholder="Toutes les sociétés..." autocomplete="off">
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-concession">Sites</label>
+                    <select id="filter-concession" multiple placeholder="Tous les sites..." autocomplete="off">
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-categorie">Catégorie Client</label>
+                    <select id="filter-categorie" multiple placeholder="Toutes les catégories..." autocomplete="off">
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-code-gestion">Code Gestion</label>
+                    <select id="filter-code-gestion" multiple placeholder="Tous les codes..." autocomplete="off">
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-constructeur">Constructeur / Marque</label>
+                    <select id="filter-constructeur" multiple placeholder="Tous les constructeurs..."
+                        autocomplete="off">
+                    </select>
+                </div>
+
+
+
+                <div class="filter-group">
+                    <label for="filter-nature-operation">Nature d'Opération</label>
+                    <select id="filter-nature-operation" multiple placeholder="Toutes les natures..."
+                        autocomplete="off">
+                    </select>
+                </div>
+
+                <button id="btn-apply-filters" class="btn btn-primary">
+                    Appliquer les filtres
+                </button>
+
+                <button id="btn-reset-filters" class="btn btn-secondary">
+                    Réinitialiser
+                </button>
+            </div>
+
+            <div class="status-section">
+                <div id="api-status" class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Chargement...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenu principal -->
+        <main class="main-content">
+            <!-- Titre et période -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h2>Chiffre d'Affaires</h2>
+                    <p id="data-info">Année N vs N-1</p>
+                </div>
+            </header>
+
+            <!-- CHIFFRES CLÉS - Vue principale -->
+            <section class="key-figures">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <span class="kpi-label">Magasin</span>
+                        <span id="kpi-mav-n" class="kpi-value">-</span>
+                        <span id="kpi-mav-n1" class="kpi-sub">N-1: -</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Atelier</span>
+                        <span id="kpi-atelier-n" class="kpi-value">-</span>
+                        <span id="kpi-atelier-n1" class="kpi-sub">N-1: -</span>
+                    </div>
+                    <div class="kpi-card kpi-total">
+                        <span class="kpi-label">CA Total N</span>
+                        <span id="kpi-total-n" class="kpi-value">-</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">CA Total N-1</span>
+                        <span id="kpi-total-n1" class="kpi-value">-</span>
+                    </div>
+                    <div class="kpi-card" id="kpi-evolution-card">
+                        <span class="kpi-label">Évolution</span>
+                        <span id="kpi-evolution" class="kpi-value">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Zone principale avec carte (et tableau si filtre actif) -->
+            <div class="content-grid">
+                <!-- Carte de France (toujours visible) -->
+                <section class="card map-card">
+                    <div class="card-header">
+                        <h3>Carte des Clients</h3>
+                        <span id="client-count" class="badge">0 clients</span>
+                    </div>
+                    <div id="map" class="map-container"></div>
+                    <div class="map-legend">
+                        <h4>Légende CA</h4>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #8b5cf6; border: 2px solid #7c3aed;">
+                                </div>
+                                <span class="legend-text"><strong>CA = 0€</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #1e40af; border: 2px solid #1e3a8a;">
+                                </div>
+                                <span class="legend-text"><strong>0 - 1k€</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #38bdf8; border: 2px solid #0ea5e9;">
+                                </div>
+                                <span class="legend-text"><strong>1k - 5k€</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #22c55e; border: 2px solid #16a34a;">
+                                </div>
+                                <span class="legend-text"><strong>5k - 10k€</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #eab308; border: 2px solid #ca8a04;">
+                                </div>
+                                <span class="legend-text"><strong>10k - 25k€</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #f97316; border: 2px solid #ea580c;">
+                                </div>
+                                <span class="legend-text"><strong>25k - 100k€</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-circle" style="background: #dc2626; border: 2px solid #b91c1c;">
+                                </div>
+                                <span class="legend-text"><strong>> 100k€</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tableau des clients sélectionnés -->
+                <section id="selected-clients-section" class="card table-card hidden">
+                    <div class="card-header">
+                        <h3>Clients Sélectionnés</h3>
+                        <div class="header-actions">
+                            <span id="selected-count" class="badge">0 clients</span>
+                            <button id="btn-clear-selection" class="btn-small">Effacer</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="selected-clients-table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>N° Client</th>
+                                    <th class="num">CA Total</th>
+                                    <th>Site</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selected-clients-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Tableau détail client (caché par défaut, visible au clic sur un client) -->
+                <section id="detail-section" class="card table-card hidden">
+                    <div class="card-header">
+                        <h3 id="detail-title">Détail Client</h3>
+                        <button id="btn-close-detail" class="btn-small">Fermer</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="client-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>N° Facture</th>
+                                    <th>Type</th>
+                                    <th>Service</th>
+                                    <th>Constructeur</th>
+                                    <th class="num">Quantité</th>
+                                    <th class="num">Prix Unit.</th>
+                                    <th class="num">Montant HT</th>
+                                    <th>Année</th>
+                                </tr>
+                            </thead>
+                            <tbody id="client-detail-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="mobile-backdrop" class="mobile-backdrop"></div>
+
+    <!-- Mobile Floating Button (Root) -->
+    <button id="mobile-menu-btn" class="btn-mobile-menu hidden-desktop" onclick="toggleMenuDirect()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Application JS -->
+    <script src="/js/app.js"></script>
+</body>
+
+</html>
