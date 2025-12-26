@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title>Liste utilisateurs</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+</head>
+
+<body class="p-4">
+
+<h2>Sélectionne un utilisateur</h2>
+
+<form method="GET" action="/compare_user">
+
+    <select name="id" class="form-control mb-3">
+        {% for u in users %}
+            <option value="{{ u.id_cree }}">
+                {{ u.id_cree }} — {{ u.prenom }} {{ u.nom }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn btn-primary">Comparer user</button>
+
+</form>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+# DealerView - Dépendances Python
+# Installer avec: pip install -r requirements.txt
+
+# Framework Web
+Flask==3.0.0
+
+# Manipulation de données
+pandas==2.1.3
+
+# Connexion MySQL
+PyMySQL==1.1.2
+
+# Optionnel: pour supprimer les warnings pandas
+# SQLAlchemy==2.0.23

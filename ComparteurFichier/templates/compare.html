@@ -1,0 +1,254 @@
+<html>
+
+<head>
+    <title>Comparaison - {{ sap }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+            font-size: 1.3rem;
+            text-decoration: none;
+        }
+
+        .navbar-text {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 0.95rem;
+        }
+
+        .navbar-text a {
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-decoration: none;
+        }
+
+        .navbar-text a:hover {
+            color: white !important;
+        }
+
+        .container-main {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card-main {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0 0 10px 0;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #7f8c8d;
+        }
+
+        .btn-back {
+            background-color: #95a5a6;
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background-color: #7f8c8d;
+            color: white;
+            text-decoration: none;
+        }
+
+        .comparison-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .count-badge {
+            background-color: #3498db;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        .both {
+            background-color: #93e0a6 !important;
+        }
+
+        table td,
+        table th {
+            padding: 8px 12px !important;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            cursor: pointer;
+            background: #f1f2f6 !important;
+        }
+
+        .legend-box {
+            background: white;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            padding: 8px 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            background: #93e0a6;
+            border: 1px solid #7fd49a;
+            border-radius: 2px;
+        }
+    </style>
+
+    <script>
+        function openUser(id_cree, sap) {
+            window.location = "/compare_user?id=" + encodeURIComponent(id_cree) + "&sap=" + encodeURIComponent(sap);
+        }
+    </script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark">
+        <div class="container-main w-100 d-flex align-items-center p-0">
+            <a href="/" class="navbar-brand">DealerView</a>
+            {% if sap_princ %}
+            <span class="navbar-text">
+                <a href="/dealers/{{ sap_princ }}">{{ sap_princ }}</a> › {{ sap }}
+            </span>
+            {% else %}
+            <span class="navbar-text">{{ sap }}</span>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container-main">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                {% if sap_princ %}
+                <li class="breadcrumb-item"><a href="/dealers/{{ sap_princ }}">SAP Principal {{ sap_princ }}</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active">Dealer {{ sap }}</li>
+            </ol>
+        </nav>
+
+        <h2 class="page-title">Comparaison : {{ sap_nom }} ({{ sap }})</h2>
+
+        <div class="legend-box">
+            <div class="legend-color"></div>
+            <span>Similitude entre les 2 fichiers</span>
+        </div>
+
+        {% if sap_princ %}
+        <a href="/dealers/{{ sap_princ }}" class="btn-back">⬅ Retour aux dealers</a>
+        {% else %}
+        <a href="/" class="btn-back">⬅ Retour accueil</a>
+        {% endif %}
+
+        <div class="card-main">
+            <form method="POST" action="/compare" class="form-inline">
+                <label class="mr-3 font-weight-bold" style="color: #7f8c8d;">Changer de concession :</label>
+                <select name="sap_dealer" class="form-control mr-2" style="min-width: 200px;">
+                    {% for s in all_saps %}
+                    <option value="{{ s }}" {% if s==sap %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary">Valider</button>
+            </form>
+        </div>
+
+        <style>
+            .btn-primary {
+                background-color: #3498db;
+                border: none;
+                border-radius: 6px;
+            }
+
+            .btn-primary:hover {
+                background-color: #2980b9;
+            }
+        </style>
+
+        <div class="row">
+
+            <!-- TABLEAU SSO -->
+            <div class="col-md-6">
+                <div class="card-main">
+                    <div class="comparison-header">
+                        Fichier Welcome
+                        <span class="count-badge" style="background-color: #e74c3c;">{{ count_sso }}</span>
+                    </div>
+                    {{ sso|safe }}
+                </div>
+            </div>
+
+            <!-- TABLEAU IDOCS -->
+            <div class="col-md-6">
+                <div class="card-main">
+                    <div class="comparison-header">
+                        Fichier IDOCS
+                        <span class="count-badge">{{ count_idocs }}</span>
+                    </div>
+                    {{ idocs|safe }}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
