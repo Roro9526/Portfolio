@@ -1,18 +1,30 @@
-Bienvenue sur mon portfolio ! Vous y trouverez mes projets réalisés dans le cadre de mes études et de mes expériences professionnelles, notamment dans les domaines de la Big Data, de l'Intelligence Artificielle et du Machine Learning. Chaque projet présente des compétences techniques variées, allant du développement web et mobile à l'intégration de solutions IA.
+Bienvenue sur mon portfolio ! Vous y trouverez une sélection de projets réalisés dans le cadre de mes études, de mes expériences professionnelles ainsi que de mes initiatives personnelles. Ils couvrent plusieurs domaines tels que la Big Data, l’Intelligence Artificielle, le Machine Learning et le développement logiciel. Chaque projet met en avant différentes compétences, allant du développement web et mobile jusqu’à l’intégration de solutions IA et d’architectures modernes.
 
 Projets
 
 Scénario Builder (Symfony)
-Projet réalisé en équipe, consistant à créer un logiciel permettant de générer des scénarios interactifs. L'application offre la possibilité de modifier l'issue d'un scénario en fonction des choix effectués par l'utilisateur. Développé avec Symfony pour la gestion des données et la logique métier.
+Projet d’équipe visant à développer un logiciel de création de scénarios interactifs. L’application permet de modifier le déroulement et la fin d’un scénario selon les choix réalisés par l’utilisateur. Symfony est utilisé pour la gestion des données, la logique métier et la structure applicative.
 
 Crypto Trading App (React)
-Développement d'une application de trading de crypto-monnaies, inspirée de plateformes comme Binance. Cette application permet de suivre en temps réel les prix des crypto-monnaies, d'effectuer des transactions et d'afficher des graphiques dynamiques. Le projet a été développé en React pour une expérience utilisateur fluide et réactive.
+Application de trading de crypto-monnaies inspirée des fonctionnalités de plateformes comme Binance. Suivi des prix en temps réel, exécution de transactions, et graphiques dynamiques. Développée en React pour garantir fluidité, performance et réactivité.
+
+PLycan – Jeu de Loup-Garou en Ligne (JS, React, Docker, Kubernetes)
+Projet d’école consistant à créer une plateforme de jeu multijoueur inspirée du Loup-Garou. Architecture conteneurisée avec Docker, puis migration vers Kubernetes. Le jeu est développé en JavaScript et React, avec une gestion des rôles et parties en temps réel.
+
+Portfolio Tracker – Suivi d’Actifs Financiers (Node.js)
+Projet personnel permettant de suivre l’évolution de mes investissements. Récupération automatique des cours en temps réel, suivi de l’évolution du portefeuille et affichage de statistiques clés. Développé en Node.js avec mise en place d’appels API financiers.
+
+Projet CPS1 – Dashboard Commercial (JS, HTML, API)
+Application interne de visualisation des performances commerciales. Affiche l’ensemble des clients sur une carte interactive avec un code couleur basé sur le chiffre d’affaires. Accès aux commandes associées à chaque client. Développé en JavaScript / HTML avec consommation d’API métier.
+
+ComparteurFichier – Analyse et Comparaison de Données Excel (Python, Pandas, HTML)
+Logiciel permettant de comparer deux fichiers Excel volumineux contenant de nombreuses informations. Import dans une base de données générée automatiquement via Pandas, analyse des différences puis restitution des résultats dans une interface HTML.
 
 Compétences
-Développement Fullstack (Symfony, React)
 
-Gestion de bases de données SQL
-
-Création d'applications interactives et dynamiques
-
-Méthodologie de travail en équipe (Agile)
+Développement Fullstack (Symfony, React, Node.js)
+Programmation web et applications dynamiques
+Gestion et structuration de bases de données SQL
+Utilisation de Python / Pandas pour l’analyse et le traitement de données
+Méthodologie de projet en équipe (Agile)
+Mise en place de conteneurs et orchestration (Docker, Kubernetes)
